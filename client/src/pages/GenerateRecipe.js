@@ -18,7 +18,7 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
   };
 
   return (
-    <div className='text-center'>
+    <div className=''>
       <div className='flex flex-row justify-center'>
         <form onSubmit={handleSubmit}>
           <input
@@ -29,21 +29,25 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
             onChange={handleChange}
           />
         </form>
-        <button className="py-2.5 px-3.5 bg-green-600 hover:bg-green-700 focus:outline-none rounded-md font-bold" onClick={handleSubmit}>
+        <button className="py-2.5 px-3.5 bg-green-500 hover:bg-green-600 focus:outline-none rounded-md font-bold" onClick={handleSubmit}>
           Enter
         </button>
       </div>
-      <h1 className='text-1xl text-center mt-5'> Pantry </h1>
-      <div className="mt-2 p-2 border border-gray-300 rounded-md flex flex-wrap max-w-2xl min-h-36 overflow-y-auto mx-auto">
-        {nameList.map((name, index) => (
-          <div 
-            key={index} 
-            className="p-2 m-1 h-10 border border-gray-200 rounded-md flex-none cursor-pointer hover:bg-red-400 transition-opacity duration-300"
-            onClick={() => handleRemoveIngredient(index)}
-          >
-            {name}
-          </div>
-        ))}
+      {/* <h1 className='text-2xl text-center mt-5'> Pantry </h1> */}
+      <div className="mt-4 p-2 border border-gray-300 rounded-md flex flex-wrap max-w-2xl min-h-16 overflow-y-auto mx-auto">
+        {nameList.length === 0 ? (
+          <div className="flex items-center justify-center text-gray-400 text-center w-full h-full">PANTRY</div>
+        ) : (
+          nameList.map((name, index) => (
+            <div 
+              key={index} 
+              className="items-center p-2 m-1 h-10 border border-gray-200 rounded-md flex-none cursor-pointer hover:bg-red-400 transition-opacity duration-300"
+              onClick={() => handleRemoveIngredient(index)}
+            >
+              {name}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -52,6 +56,8 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
 function GenerateRecipe() {
   const [nameList, setNameList] = useState([]);
   const [ingredients, setIngredients] = useState('');
+  const [showRecipeGeneration, setShowRecipeGeneration] = useState(false);
+  const [recipeIngredients, setRecipeIngredients] = useState('');
 
   const handleAddIngredient = (name) => {
     const updatedNameList = [...nameList, name];
@@ -66,23 +72,31 @@ function GenerateRecipe() {
     setIngredients(newList.join(','));
   };
 
+  const handleGenerateRecipes = () => {
+    setRecipeIngredients(ingredients);
+    setShowRecipeGeneration(true);
+  };
+
   return (
     <div>
       <div className="flex">
-        <div className='w-52'>
+        <div className='w-60'>
           <SideBar />
         </div>
-        <div className="flex-grow">
-          <h1 className='text-3xl text-center mt-5 mb-5'>Recipe Generator</h1>
+        <div className="flex-col flex-grow">
+          <h1 className='text-5xl font-bold text-center mt-20 mb-16'>RECIPE GENERATOR</h1>
           <IngredientInput 
             nameList={nameList} 
             handleAddIngredient={handleAddIngredient} 
             handleRemoveIngredient={handleRemoveIngredient} 
           />
-          <button className="py-4 px-5 bg-green-600 hover:bg-green-700 focus:outline-none rounded-md font-bold mt-5">
-            Generate Recipes
-          </button >
-          <RecipeGeneration ingredients={ingredients} />
+          <div className='flex justify-center'>
+            <button className="py-4 px-5 bg-green-500 hover:bg-green-600  rounded-md font-bold mt-5"
+                                onClick={handleGenerateRecipes}>
+                Generate Recipes
+              </button >
+            </div>
+          {showRecipeGeneration && <RecipeGeneration ingredients={recipeIngredients} />}
         </div>
       </div>
     </div>
