@@ -82,7 +82,39 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// generate recipes with saved pantry from user
+app.post('/pantry/:username', (req, res) => {
+  const { username } = req.params;
+  const { ingredient } = req.body;
 
+  User.findOneAndUpdate(
+    { username },
+    { $addToSet: { pantry: ingredient } }, // $addToSet avoids duplicates
+    { new: true } // Return the updated document
+  )
+    .then((user) => {
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      res.json(user.pantry);
+    })
+    .catch((err) => res.status(500).json({ error: 'Error updating pantry' }));
+});
+
+// remove ingredients from the user's saved pantry
+app.delete('/pantry/:username', (req, res) => {
+    const { username } = req.params;
+    const { ingredient } = req.body;
+  
+    User.findOneAndUpdate(
+      { username },
+      { $pull: { pantry: ingredient } }, // $pull removes the ingredient
+      { new: true } // Return the updated document
+    )
+      .then((user) => {
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json(user.pantry);
+      })
+      .catch((err) => res.status(500).json({ error: 'Error updating pantry' }));
+});
 
 app.listen(port, () => {
     console.log(`Server running`);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Axios from 'axios';
 
-function Login( { setUser } ) {
+function Login( { user , setUser } ) {
   const [option, setOption] = useState('login');
   const [usernameReg, setUsernameReg] = useState('');
   const [passwordReg, setPasswordReg] = useState('');
@@ -57,7 +57,7 @@ function Login( { setUser } ) {
             <h2 className="text-2xl font-bold mb-6 text-center">LOGIN</h2>
             {/* registration error */}
             {errorMessage && (
-              <div className="mb-4 py-2 text-white bg-red-500 text-center">
+              <div className="mb-4 py-2 text-white bg-red-500 text-center rounded">
                 {errorMessage}
               </div>
             )}
@@ -129,6 +129,11 @@ function Login( { setUser } ) {
           </div>
         </div>
       </div>
+      {user && (
+        <div className="fixed bottom-0 right-0 p-4 bg-gray-800 text-white">
+          Logged in as: {user.username}
+        </div>
+      )}
     </div>
   );
 }

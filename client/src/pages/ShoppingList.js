@@ -27,7 +27,7 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
             onChange={handleChange}
           />
         </form>
-        <button className="py-2.5 px-3.5 bg-green-500 hover:bg-green-600 focus:outline-none rounded-md font-bold" onClick={handleSubmit}>
+        <button className="py-2.5 px-3.5 bg-green-400 hover:bg-green-500 focus:outline-none rounded-md font-bold" onClick={handleSubmit}>
           Enter
         </button>
       </div>
@@ -60,7 +60,7 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
   );
 };
 
-function ShoppingList() {
+function ShoppingList({ user }) {
 
   const [nameList, setNameList] = useState([]);
   const [ingredients, setIngredients] = useState('');

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import SideBar from '../components/SideBar';
+import React, { useState , useEffect } from 'react';
 import RecipeGeneration from '../components/RecipeGeneration';
+import Axios from 'axios';
 
 const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient }) => {
   const [name, setName] = useState('');
@@ -29,7 +29,7 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
             onChange={handleChange}
           />
         </form>
-        <button className="py-2.5 px-3.5 bg-green-500 hover:bg-green-600 focus:outline-none rounded-md font-bold" onClick={handleSubmit}>
+        <button className="py-2.5 px-3.5 bg-green-400 hover:bg-green-500 focus:outline-none rounded-md font-bold" onClick={handleSubmit}>
           Enter
         </button>
       </div>
@@ -41,9 +41,9 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
           nameList.map((name, index) => (
             <div 
               key={index} 
-              className="items-center p-2 m-1 h-10 border border-gray-200 rounded-md flex-none cursor-pointer hover:bg-red-400 transition-opacity duration-300"
-              onClick={() => handleRemoveIngredient(index)}
-            >
+              className="items-center p-2 m-1 h-10 border border-gray-200 rounded-md flex-none
+                         cursor-pointer hover:bg-red-400 transition-opacity duration-300"
+              onClick={() => handleRemoveIngredient(name)}>
               {name}
             </div>
           ))
@@ -53,23 +53,60 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
   );
 };
 
-function GenerateRecipe() {
+function GenerateRecipe( { user } ) {
   const [nameList, setNameList] = useState([]);
   const [ingredients, setIngredients] = useState('');
   const [showRecipeGeneration, setShowRecipeGeneration] = useState(false);
   const [recipeIngredients, setRecipeIngredients] = useState('');
 
+  useEffect(() => {
+    if (user) {
+      Axios.get(`http://localhost:5000/pantry/${user.username}`)
+        .then((response) => {
+          const pantry = response.data.pantry;
+          setNameList(pantry);
+          setIngredients(pantry.join(','));
+        })
+        .catch((error) => {
+          console.error('Error fetching pantry', error);
+        });
+    }
+  }, [user]);
+
   const handleAddIngredient = (name) => {
-    const updatedNameList = [...nameList, name];
-    setNameList(updatedNameList);
-    setIngredients(updatedNameList.join(','));
+    if (user) {
+      Axios.post(`http://localhost:5000/pantry/${user.username}`, { ingredient: name })
+        .then((response) => {
+          const updatedNameList = response.data;
+          setNameList(updatedNameList);
+          setIngredients(updatedNameList.join(','));
+        })
+        .catch((error) => {
+          console.error('Error updating pantry', error);
+        });
+    } else {
+      const updatedNameList = [...nameList, name];
+      setNameList(updatedNameList);
+      setIngredients(updatedNameList.join(','));
+    }
   };
 
-  const handleRemoveIngredient = (index) => {
-    const newList = [...nameList];
-    newList.splice(index, 1);
-    setNameList(newList);
-    setIngredients(newList.join(','));
+  const handleRemoveIngredient = (name) => {
+    if (user) {
+      Axios.delete(`http://localhost:5000/pantry/${user.username}`, { data: { ingredient: name } })
+        .then((response) => {
+          const updatedNameList = response.data;
+          setNameList(updatedNameList);
+          setIngredients(updatedNameList.join(','));
+        })
+        .catch((error) => {
+          console.error('Error removing ingredient from pantry', error);
+        });
+    } else {
+      const newList = nameList.filter((item) => item !== name);
+      setNameList(newList);
+      setIngredients(newList.join(','));
+    }
   };
 
   const handleGenerateRecipes = () => {
@@ -87,7 +124,7 @@ function GenerateRecipe() {
           handleRemoveIngredient={handleRemoveIngredient} 
         />
         <div className='flex justify-center'>
-          <button className="py-4 px-5 bg-green-500 hover:bg-green-600  rounded-md font-bold mt-5"
+          <button className="py-4 px-5 bg-green-400 hover:bg-green-500  rounded-md font-bold mt-5"
                               onClick={handleGenerateRecipes}>
               Generate Recipes
             </button >

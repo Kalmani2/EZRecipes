@@ -4,8 +4,6 @@ import { IoIosCog, IoMdCart, IoIosInformationCircle, IoMdPerson,  IoIosNutrition
 import '../App.css';
 
 const SideBar = ( { user } ) => {
-
-
     // sidebar page navigation
     const navigate = useNavigate();
 
@@ -27,7 +25,6 @@ const SideBar = ( { user } ) => {
 
 
   return (
-    // Sidebar outline
     <div className="fixed top-0 left-0 h-screen w-60 m-0
                     flex flex-col justify-between
                     bg-green-400 text-white shadow-lg">

@@ -17,11 +17,11 @@ function App() {
       </div>
       <div className="flex-grow ml-60">
         <Routes>
-          <Route path="/" element={<GenerateRecipe />} />
-          <Route path='/shoppingList' element={<ShoppingList />} />
+          <Route path="/" element={<GenerateRecipe user={user}/>} />
+          <Route path='/shoppingList' element={<ShoppingList user={user}/>} />
           <Route path='/information' element={<Information />} />
-          <Route path='/login' element={<Login setUser={setUser} />} />
-          <Route path='/account' element={<Account />} />
+          <Route path='/login' element={<Login user={user} setUser={setUser} />} />
+          <Route path='/account' element={<Account user={user} setUser={setUser}/>} />
         </Routes>
       </div>
     </div>
