@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosCog, IoMdCart, IoIosInformationCircle, IoMdPerson,  IoIosNutrition} from 'react-icons/io';
 import '../App.css';
 
-const SideBar = () => {
+const SideBar = ( { user } ) => {
 
 
     // sidebar page navigation
@@ -20,6 +20,9 @@ const SideBar = () => {
     }
     const navigateLogin = () => {
         navigate('/login')
+    }
+    const navigateAccount = () => {
+        navigate('/account')
     }
 
 
@@ -52,8 +55,8 @@ const SideBar = () => {
         <div className="py-2 mx-8 rounded shadow-lg
                         text-center mb-8 mt-8 font-bold  
                         bg-green-600 hover:bg-green-700 cursor-pointer icon-text"
-                        onClick={navigateLogin}>
-            <IoMdPerson className="inline mr-2" />Login
+             onClick={user ? navigateAccount : navigateLogin}>
+            <IoMdPerson className="inline mr-2" />{user ? 'Account' : 'Login'}
         </div>
     </div>
   );

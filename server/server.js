@@ -2,14 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
 
 // import User model
 const User = require('./models/userModel');
 
+// configurations
 const app = express();
 const port = 5000;
 const saltRounds = 10;
+const jwtSecret = 'secret';
 
 app.use(express.json());
 app.use(cors());
@@ -24,7 +26,6 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 app.post('/register', async (req, res) => {
 
     const { username, password } = req.body;
-
 
     try {
         // check to see if user exists
@@ -57,6 +58,29 @@ app.post('/register', async (req, res) => {
 });
 
 // login endpoint/function
+app.post('/login', async (req, res) => {
+    const { username , password } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid username or password'});
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+        if (!isPasswordValid) {
+            return res.status(400).json( { error: 'Invalid username or password'});
+        }
+
+        const token = jwt.sign({ id: user._id} , jwtSecret , {expiresIn: '1h'});
+        res.json({ token, username: user.username})
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: 'Error logging in user' });
+    }
+});
 
 
 

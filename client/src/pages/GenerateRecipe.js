@@ -79,25 +79,20 @@ function GenerateRecipe() {
 
   return (
     <div>
-      <div className="flex">
-        <div className='w-60'>
-          <SideBar />
-        </div>
-        <div className="flex-col flex-grow">
-          <h1 className='text-5xl font-bold text-center mt-20 mb-16'>RECIPE GENERATOR</h1>
-          <IngredientInput 
-            nameList={nameList} 
-            handleAddIngredient={handleAddIngredient} 
-            handleRemoveIngredient={handleRemoveIngredient} 
-          />
-          <div className='flex justify-center'>
-            <button className="py-4 px-5 bg-green-500 hover:bg-green-600  rounded-md font-bold mt-5"
-                                onClick={handleGenerateRecipes}>
-                Generate Recipes
-              </button >
-            </div>
-          {showRecipeGeneration && <RecipeGeneration ingredients={recipeIngredients} />}
-        </div>
+      <div className="flex flex-col flex-grow">
+        <h1 className='text-5xl font-bold text-center mt-20 mb-16'>RECIPE GENERATOR</h1>
+        <IngredientInput 
+          nameList={nameList} 
+          handleAddIngredient={handleAddIngredient} 
+          handleRemoveIngredient={handleRemoveIngredient} 
+        />
+        <div className='flex justify-center'>
+          <button className="py-4 px-5 bg-green-500 hover:bg-green-600  rounded-md font-bold mt-5"
+                              onClick={handleGenerateRecipes}>
+              Generate Recipes
+            </button >
+          </div>
+        {showRecipeGeneration && <RecipeGeneration ingredients={recipeIngredients} />}
       </div>
     </div>
   );

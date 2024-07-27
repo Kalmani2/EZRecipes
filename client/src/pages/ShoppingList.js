@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import SideBar from '../components/SideBar';
 
 const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient, handleAddToPantry }) => {
   const [name, setName] = useState('');
@@ -85,23 +84,15 @@ function ShoppingList() {
 
   return (
     <div>
-        <div className='flex'>
-            <div className='w-60'>
-                <SideBar />
-            </div>
-            <div className="flex-col flex-grow">
-              <h1 className='text-5xl font-bold text-center mt-20 mb-16'>SHOPPING LIST</h1>
-              <IngredientInput 
-                nameList={nameList} 
-                handleAddIngredient={handleAddIngredient} 
-                handleRemoveIngredient={handleRemoveIngredient} 
-                handleAddToPantry={handleAddToPantry}
-              />
-              
-            </div>
-
-        </div>
-      
+      <div className="flex-col flex-grow">
+        <h1 className='text-5xl font-bold text-center mt-20 mb-16'>SHOPPING LIST</h1>
+        <IngredientInput 
+          nameList={nameList} 
+          handleAddIngredient={handleAddIngredient} 
+          handleRemoveIngredient={handleRemoveIngredient} 
+          handleAddToPantry={handleAddToPantry}
+        />
+      </div>
     </div>
   )
 }
