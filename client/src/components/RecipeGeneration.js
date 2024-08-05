@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import Axios from 'axios';
 
 // personal api key
 const apiKey = '7786ae26ef1c4d6da09cf12652c9bee6';
 
-const RecipePopup = ({ id, onClose }) => {
+const RecipePopup = ({ id, onClose, handleSaveRecipe }) => {
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchRecipeDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await Axios.get(
           `https://api.spoonacular.com/recipes/${id}/information`,
           {
             params: { apiKey: apiKey },
@@ -25,6 +25,16 @@ const RecipePopup = ({ id, onClose }) => {
 
     fetchRecipeDetails();
   }, [id]);
+
+  const saveRecipe = () => {
+    if (recipe) {
+      handleSaveRecipe({
+        recipeID: recipe.id,
+        recipeName: recipe.title,
+        recipeImage: recipe.image,
+      });
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
@@ -44,7 +54,7 @@ const RecipePopup = ({ id, onClose }) => {
             <div className="mb-4">{recipe.instructions.replace(/(<([^>]+)>)/gi, '')}</div>
             <div className='flex justify-between'>
               <button onClick={onClose} className="mt-4 ml-2 bg-blue-500 text-white py-2 px-4 rounded"> Close </button>
-              <button onClick={onClose} className="mt-4 mr-2 bg-blue-500 text-white py-2 px-4 rounded"> Save Recipe </button>
+              <button onClick={saveRecipe} className="mt-4 mr-2 bg-blue-500 text-white py-2 px-4 rounded"> Save Recipe </button>
             </div>
             
           </div>
@@ -56,7 +66,7 @@ const RecipePopup = ({ id, onClose }) => {
   );
 };
 
-const RecipeGeneration = ({ ingredients }) => {
+const RecipeGeneration = ({ ingredients, handleSaveRecipe }) => {
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
@@ -65,7 +75,7 @@ const RecipeGeneration = ({ ingredients }) => {
     if (ingredients) {
       const fetchRecipes = async () => {
         try {
-          const response = await axios.get(
+          const response = await Axios.get(
             'https://api.spoonacular.com/recipes/findByIngredients',
             {
               params: {
@@ -117,7 +127,7 @@ const RecipeGeneration = ({ ingredients }) => {
         })}
       </div>
       {selectedRecipe && (
-        <RecipePopup id={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
+        <RecipePopup id={selectedRecipe} onClose={() => setSelectedRecipe(null)} handleSaveRecipe={handleSaveRecipe} />
       )}
     </div>
   );

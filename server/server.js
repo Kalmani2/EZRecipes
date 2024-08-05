@@ -180,6 +180,8 @@ app.post('/pantry/:username', async (req, res) => {
   }
 });
 
+// get shopping list for a user
+
 app.get('/shoppingList/:username', async (req, res) => {
   const { username } = req.params;
 
@@ -193,6 +195,46 @@ app.get('/shoppingList/:username', async (req, res) => {
     res.json(user.shoppingList);
   } catch (error) {
     res.status(500).send('Error fetching shopping list');
+  }
+});
+
+// save recipe to user
+
+app.post('/saveRecipe/:username', async (req, res) => {
+  const { username } = req.params;
+  const { recipeID, recipeName, recipeImage } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { username },
+      { $push: { savedRecipes: { recipeID, recipeName, recipeImage } } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user.savedRecipes);
+  } catch (error) {
+    res.status(500).json({ error: 'Error saving recipe' });
+  }
+});
+
+// get user's all saved recipes
+app.get('/savedRecipes/:username', async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ username })
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user.savedRecipes);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error fetching saved recipes' });
   }
 });
 

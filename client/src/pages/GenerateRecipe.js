@@ -33,7 +33,6 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
           Enter
         </button>
       </div>
-      {/* <h1 className='text-2xl text-center mt-5'> Pantry </h1> */}
       <div className="mt-4 p-2 border border-gray-300 rounded-md flex flex-wrap max-w-2xl min-h-16 overflow-y-auto mx-auto">
         {nameList.length === 0 ? (
           <div className="flex items-center justify-center text-gray-400 text-center w-full h-full">PANTRY</div>
@@ -114,6 +113,20 @@ function GenerateRecipe( { user } ) {
     setShowRecipeGeneration(true);
   };
 
+  const handleSaveRecipe = (recipe) => {
+    if (user) {
+      Axios.post(`http://localhost:5000/saveRecipe/${user.username}`, recipe)
+        .then((response) => {
+          console.log('Recipe saved successfully', response.data);
+        })
+        .catch((error) => {
+          console.error('Error saving recipe', error);
+        });
+    } else {
+      console.error('User not logged in');
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col flex-grow">
@@ -129,7 +142,7 @@ function GenerateRecipe( { user } ) {
               Generate Recipes
             </button >
           </div>
-        {showRecipeGeneration && <RecipeGeneration ingredients={recipeIngredients} />}
+        {showRecipeGeneration && <RecipeGeneration ingredients={recipeIngredients} handleSaveRecipe={handleSaveRecipe}/>}
       </div>
     </div>
   );
