@@ -34,7 +34,6 @@ const RecipePopup = ({ id, onClose }) => {
           <div>
             <h2 className="text-2xl font-bold mb-4 text-center">{recipe.title}</h2>
             <img src={recipe.image} alt={recipe.title} className="w-full h-60 object-cover rounded-md mb-4"/>
-            {/* <p className="mb-4">{recipe.summary.replace(/(<([^>]+)>)/gi, '')}</p> */}
             <h3 className="text-xl font-bold mb-2">Ingredients</h3>
             <ul className="list-disc list-inside mb-4">
               {recipe.extendedIngredients.map((ingredient) => (
@@ -45,7 +44,7 @@ const RecipePopup = ({ id, onClose }) => {
             <div className="mb-4">{recipe.instructions.replace(/(<([^>]+)>)/gi, '')}</div>
             <div className='flex justify-between'>
               <button onClick={onClose} className="mt-4 ml-2 bg-blue-500 text-white py-2 px-4 rounded"> Close </button>
-              <button onClick={onClose} className="mt-4 mr-2 bg-blue-500 text-white py-2 px-4 rounded"> Save </button>
+              <button onClick={onClose} className="mt-4 mr-2 bg-blue-500 text-white py-2 px-4 rounded"> Save Recipe </button>
             </div>
             
           </div>

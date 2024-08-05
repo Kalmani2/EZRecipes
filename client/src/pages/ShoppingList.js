@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import Axios from 'axios';
 
 const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient, handleAddToPantry }) => {
   const [name, setName] = useState('');
@@ -46,13 +47,12 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
               {/* remove from shopping list and add to pantry */}
               <h1 className='flex items-center justify-center p-1 h-7 w-7 cursor-pointer
                               border border-gray-200 rounded-md mr-2 bg-green-400 hover:bg-green-500'
-                              onClick={handleRemoveIngredient}> + </h1>
+                              onClick={() => handleAddToPantry(name)}> + </h1>
               {/* remove from shopping list */}
               <h1 className='flex items-center justify-center p-1 h-7 w-7 cursor-pointer
                               border border-gray-200 rounded-md bg-red-400 hover:bg-red-500'
-                              onClick={handleRemoveIngredient}> - </h1>
+                              onClick={() => handleRemoveIngredient(name)}> - </h1>
             </div>
-            
           </div>
         ))}
       </div>
@@ -63,24 +63,70 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
 function ShoppingList({ user }) {
 
   const [nameList, setNameList] = useState([]);
-  const [ingredients, setIngredients] = useState('');
 
+  useEffect(() => {
+    if (user) {
+      Axios.get(`http://localhost:5000/shoppingList/${user.username}`)
+        .then(response => {
+          setNameList(response.data || []);
+        })
+        .catch(error => {
+          console.error('Error fetching shopping list', error);
+        });
+    }
+  }, [user]);
+
+  // add ingredient to shopping list
   const handleAddIngredient = (name) => {
-    const updatedNameList = [...nameList, name];
-    setNameList(updatedNameList);
-    setIngredients(updatedNameList.join(','));
+    if (nameList.includes(name)) {
+      return;
+    }
+    
+    if (user) {
+      Axios.post(`http://localhost:5000/shoppingList/${user.username}`, { ingredient: name })
+        .then(response => {
+          setNameList(response.data);
+        })
+        .catch(error => {
+          console.error('Error adding ingredient to shopping list', error);
+        });
+    } else {
+      const updatedNameList = [...nameList, name];
+      setNameList(updatedNameList);
+    }
   };
 
-  const handleRemoveIngredient = (index) => {
-    const newList = [...nameList];
-    newList.splice(index, 1);
-    setNameList(newList);
-    setIngredients(newList.join(','));
+  // remove ingredient from shopping list
+  const handleRemoveIngredient = (name) => {
+    if (user) {
+      Axios.delete(`http://localhost:5000/shoppingList/${user.username}`, { data: { ingredient: name } })
+        .then(response => {
+          setNameList(response.data);
+        })
+        .catch(error => {
+          console.error('Error removing ingredient from shopping list', error);
+        });
+    } else {
+      const newList = nameList.filter(item => item !== name);
+      setNameList(newList);
+    }
   };
 
-  const handleAddToPantry = () => {
-
-  }
+  // move ingredient from shopping list to pantry
+  const handleAddToPantry = (name) => {
+    if (user) {
+      Axios.post(`http://localhost:5000/pantry/${user.username}`, { ingredient: name })
+        .then(response => {
+          setNameList(response.data.shoppingList);
+        })
+        .catch(error => {
+          console.error('Error moving ingredient to pantry', error);
+        });
+    } else {
+      const newList = nameList.filter(item => item !== name);
+      setNameList(newList);
+    }
+  };
 
   return (
     <div>
@@ -97,4 +143,4 @@ function ShoppingList({ user }) {
   )
 }
 
-export default ShoppingList
+export default ShoppingList;

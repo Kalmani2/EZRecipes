@@ -116,6 +116,86 @@ app.delete('/pantry/:username', (req, res) => {
       .catch((err) => res.status(500).json({ error: 'Error updating pantry' }));
 });
 
+// shopping list functions
+
+// add ingredients to the user's shopping list
+app.post('/shoppingList/:username', async (req, res) => {
+  const { username } = req.params;
+  const { ingredient } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.shoppingList.includes(ingredient)) {
+      return res.status(400).json({ error: 'Ingredient already in the shopping list' });
+    }
+
+    user.shoppingList.push(ingredient);
+    await user.save();
+
+    res.json(user.shoppingList);
+  } catch (error) {
+    res.status(500).send('Error updating shopping list');
+  }
+});
+
+// remove ingredients from the user's shopping list
+app.delete('/shoppingList/:username', async (req, res) => {
+  const { username } = req.params;
+  const { ingredient } = req.body;
+
+  try {
+      const user = await User.findOneAndUpdate(
+          { username },
+          { $pull: { shoppingList: ingredient } },
+          { new: true }
+      );
+      res.json(user.shoppingList);
+  } catch (error) {
+      res.status(500).send('Error removing ingredient from shopping list');
+  }
+});
+
+// add ingredient to pantry from shopping list
+app.post('/pantry/:username', async (req, res) => {
+  const { username } = req.params;
+  const { ingredient } = req.body;
+
+  try {
+      const user = await User.findOneAndUpdate(
+          { username },
+          { 
+              $push: { pantry: ingredient },
+              $pull: { shoppingList: ingredient }
+          },
+          { new: true }
+      );
+      res.json({ pantry: user.pantry, shoppingList: user.shoppingList });
+  } catch (error) {
+      res.status(500).send('Error moving ingredient to pantry');
+  }
+});
+
+app.get('/shoppingList/:username', async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user.shoppingList);
+  } catch (error) {
+    res.status(500).send('Error fetching shopping list');
+  }
+});
+
 app.listen(port, () => {
     console.log(`Server running`);
 });
