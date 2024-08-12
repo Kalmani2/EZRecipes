@@ -16,9 +16,9 @@ const jwtSecret = 'secret';
 app.use(express.json());
 app.use(cors());
 
-const dbURI = 'mongodb://localhost:27017/EZRecipes';
+const connection = 'mongodb://localhost:27017/EZRecipes';
 
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(connection, {})
   .then((result) => console.log('Connected to MongoDB'))
   .catch((err) => console.error(err));
 
@@ -80,6 +80,18 @@ app.post('/login', async (req, res) => {
         console.error(err)
         res.status(500).json({ error: 'Error logging in user' });
     }
+});
+
+// get pantry
+app.get('/pantry/:username', (req, res) => {
+  const { username } = req.params;
+
+  User.findOne({ username })
+    .then((user) => {
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      res.json(user.pantry);
+    })
+    .catch((err) => res.status(500).json({ error: 'Error fetching pantry' }));
 });
 
 // generate recipes with saved pantry from user
@@ -161,22 +173,29 @@ app.delete('/shoppingList/:username', async (req, res) => {
 });
 
 // add ingredient to pantry from shopping list
-app.post('/pantry/:username', async (req, res) => {
+app.post('/pantry/fromShoppingList/:username', async (req, res) => {
   const { username } = req.params;
   const { ingredient } = req.body;
 
   try {
-      const user = await User.findOneAndUpdate(
-          { username },
-          { 
-              $push: { pantry: ingredient },
-              $pull: { shoppingList: ingredient }
-          },
-          { new: true }
-      );
-      res.json({ pantry: user.pantry, shoppingList: user.shoppingList });
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    if (!user.pantry.includes(ingredient)) {
+      user.pantry.push(ingredient);
+      user.shoppingList = user.shoppingList.filter(item => item !== ingredient);
+      await user.save();
+    } else {
+      user.shoppingList = user.shoppingList.filter(item => item !== ingredient);
+      await user.save();
+    }
+
+    res.json({ pantry: user.pantry, shoppingList: user.shoppingList });
   } catch (error) {
-      res.status(500).send('Error moving ingredient to pantry');
+    res.status(500).send('Error moving ingredient to pantry');
   }
 });
 
@@ -207,7 +226,7 @@ app.post('/saveRecipe/:username', async (req, res) => {
   try {
     const user = await User.findOneAndUpdate(
       { username },
-      { $push: { savedRecipes: { recipeID, recipeName, recipeImage } } },
+      { $push: { savedRecipes: { recipeID, recipeName, recipeImage,  } } },
       { new: true }
     );
 
@@ -235,6 +254,27 @@ app.get('/savedRecipes/:username', async (req, res) => {
     res.json(user.savedRecipes);
   } catch (error) {
     return res.status(500).json({ error: 'Error fetching saved recipes' });
+  }
+});
+
+// remove selected saved recipe
+app.delete('/savedRecipes/:username/:recipeID', async (req, res) => {
+  const { username, recipeID } = req.params;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { username },
+      { $pull: { savedRecipes: { recipeID: recipeID } } }, // $pull removes the recipe
+      { new: true } // Return the updated document
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user.savedRecipes);
+  } catch (error) {
+    res.status(500).send('Error removing recipe');
   }
 });
 

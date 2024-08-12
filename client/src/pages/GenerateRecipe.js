@@ -24,7 +24,7 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
           <input
             type="text"
             className="border-2 border-gray-300 rounded-md p-2 mr-2"
-            placeholder="Enter names"
+            placeholder="Enter ingredients"
             value={name}
             onChange={handleChange}
           />
@@ -33,9 +33,9 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
           Enter
         </button>
       </div>
-      <div className="mt-4 p-2 border border-gray-300 rounded-md flex flex-wrap max-w-2xl min-h-16 overflow-y-auto mx-auto">
+      <div className="mt-8 p-2 border border-gray-300 rounded-md flex flex-wrap max-w-2xl min-h-16 overflow-y-auto mx-auto">
         {nameList.length === 0 ? (
-          <div className="flex items-center justify-center text-gray-400 text-center w-full h-full">PANTRY</div>
+          <div className="flex mt-3 items-center justify-center text-gray-300 text-center w-full h-full ">PANTRY</div>
         ) : (
           nameList.map((name, index) => (
             <div 
@@ -62,9 +62,8 @@ function GenerateRecipe( { user } ) {
     if (user) {
       Axios.get(`http://localhost:5000/pantry/${user.username}`)
         .then((response) => {
-          const pantry = response.data.pantry;
-          setNameList(pantry);
-          setIngredients(pantry.join(','));
+          setNameList(response.data || []);
+          setIngredients(response.data.join(','));
         })
         .catch((error) => {
           console.error('Error fetching pantry', error);
@@ -76,12 +75,11 @@ function GenerateRecipe( { user } ) {
     if (user) {
       Axios.post(`http://localhost:5000/pantry/${user.username}`, { ingredient: name })
         .then((response) => {
-          const updatedNameList = response.data;
-          setNameList(updatedNameList);
-          setIngredients(updatedNameList.join(','));
+          setNameList(response.data);
+          setIngredients(response.data.join(','));
         })
         .catch((error) => {
-          console.error('Error updating pantry', error);
+          console.error('Error adding ingredient to pantry', error);
         });
     } else {
       const updatedNameList = [...nameList, name];
@@ -137,7 +135,7 @@ function GenerateRecipe( { user } ) {
           handleRemoveIngredient={handleRemoveIngredient} 
         />
         <div className='flex justify-center'>
-          <button className="py-4 px-5 bg-green-400 hover:bg-green-500  rounded-md font-bold mt-5"
+          <button className="py-4 px-5 bg-green-400 hover:bg-green-500  rounded-md font-bold mt-4"
                               onClick={handleGenerateRecipes}>
               Generate Recipes
             </button >

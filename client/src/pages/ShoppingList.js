@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
+import Tooltip from '../components/Tooltip';
+import { IoIosHelpCircleOutline } from 'react-icons/io';
 
 const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient, handleAddToPantry }) => {
   const [name, setName] = useState('');
@@ -23,7 +25,7 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
           <input
             type="text"
             className="border-2 border-gray-300 rounded-md p-2 mr-2 focus:outline-none"
-            placeholder="Enter names"
+            placeholder="Enter ingredients"
             value={name}
             onChange={handleChange}
           />
@@ -32,30 +34,38 @@ const IngredientInput = ({ nameList, handleAddIngredient, handleRemoveIngredient
           Enter
         </button>
       </div>
-      <div className="flex flex-col mt-8 p-2 border border-gray-300 rounded-md flex-wrap max-w-xl min-h-16 overflow-y-auto mx-auto">
-        {nameList.map((name, index) => (
-          <div 
-            key={index} 
-            className="flex flex-row justify-between items-center p-2 m-1 h-10 border border-gray-200 rounded-md "
-          >
-            {/* ingredient name */}
-            <div className='flex'>
-              {name}
+      <div>
+        <div className="flex flex-col mt-8 p-2 border border-gray-300 rounded-md flex-wrap max-w-xl min-h-16 overflow-y-auto mx-auto">
+          {nameList.map((name, index) => (
+            <div
+              key={index} 
+              className="flex flex-row justify-between items-center p-2 m-1 h-10 border border-gray-200 rounded-md "
+            >
+              {/* ingredient name */}
+              <div className='flex'>
+                {name}
+              </div>
+              {/* ingredient buttons */}
+              <div className='flex flex-row m-1'>
+                {/* remove from shopping list and add to pantry */}
+                <h1 className='flex items-center justify-center p-1 h-7 w-7 cursor-pointer
+                                border border-gray-200 rounded-md mr-2 bg-green-400 hover:bg-green-500'
+                                onClick={() => handleAddToPantry(name)}> + </h1>
+                {/* remove from shopping list */}
+                <h1 className='flex items-center justify-center p-1 h-7 w-7 cursor-pointer
+                                border border-gray-200 rounded-md bg-red-400 hover:bg-red-500'
+                                onClick={() => handleRemoveIngredient(name)}> - </h1>
+              </div>
             </div>
-            {/* ingredient buttons */}
-            <div className='flex flex-row m-1'>
-              {/* remove from shopping list and add to pantry */}
-              <h1 className='flex items-center justify-center p-1 h-7 w-7 cursor-pointer
-                              border border-gray-200 rounded-md mr-2 bg-green-400 hover:bg-green-500'
-                              onClick={() => handleAddToPantry(name)}> + </h1>
-              {/* remove from shopping list */}
-              <h1 className='flex items-center justify-center p-1 h-7 w-7 cursor-pointer
-                              border border-gray-200 rounded-md bg-red-400 hover:bg-red-500'
-                              onClick={() => handleRemoveIngredient(name)}> - </h1>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div >
+          <Tooltip content="Save ingredients to your shopping list. Press + to move ingredient from shopping list to pantry. Press - to remove from shopping List">
+            <IoIosHelpCircleOutline size={30} className="mt-4" />
+          </Tooltip >
+        </div>
       </div>
+
     </div>
   );
 };
@@ -115,7 +125,7 @@ function ShoppingList({ user }) {
   // move ingredient from shopping list to pantry
   const handleAddToPantry = (name) => {
     if (user) {
-      Axios.post(`http://localhost:5000/pantry/${user.username}`, { ingredient: name })
+      Axios.post(`http://localhost:5000/pantry/fromShoppingList/${user.username}`, { ingredient: name })
         .then(response => {
           setNameList(response.data.shoppingList);
         })

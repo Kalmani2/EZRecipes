@@ -16,6 +16,9 @@ function Information() {
     <div>
       <div className='flex-col flex-grow'>
         <h1 className='text-5xl font-bold text-center mt-20 mb-16'>INFORMATION</h1>
+        <p className='w-1/3 mx-auto text-justify mb-6'>
+          Transform the ingredients you have at home into delicious recipes effortlessly with EZRecipes.
+        </p>
         <p className='w-1/3 mx-auto text-justify'>
           EZRecipes was developed as a personal project by Muhammad Kalmani.
           It uses React for the frontend and Node.js with Express.js for the backend.

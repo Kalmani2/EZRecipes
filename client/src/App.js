@@ -6,6 +6,7 @@ import Information from './pages/Information';
 import Login from './pages/Login';
 import Account from './pages/Account';
 import SideBar from './components/SideBar';
+import PageNotFound from './pages/PageNotFound';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,11 +18,12 @@ function App() {
       </div>
       <div className="flex-grow ml-60">
         <Routes>
-          <Route path="/" element={<GenerateRecipe user={user}/>} />
+          <Route path='/' element={<GenerateRecipe user={user}/>} />
           <Route path='/shoppingList' element={<ShoppingList user={user}/>} />
           <Route path='/information' element={<Information />} />
           <Route path='/login' element={<Login user={user} setUser={setUser} />} />
           <Route path='/account' element={<Account user={user} setUser={setUser}/>} />
+          <Route path='*' element={<PageNotFound />} />
         </Routes>
       </div>
     </div>
