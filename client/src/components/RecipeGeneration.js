@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
 
 // personal api key
-const apiKey = '7786ae26ef1c4d6da09cf12652c9bee6';
+const apiKey = process.env.REACT_APP_SPOONACULAR_KEY
 
 const RecipePopup = ({ id, onClose, handleSaveRecipe }) => {
   const [recipe, setRecipe] = useState(null);
