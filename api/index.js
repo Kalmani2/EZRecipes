@@ -17,15 +17,15 @@ const jwtSecret = 'secret';
 app.use(express.json());
 app.use(cors());
 
-const connection = process.env.MONGODB_URI;
+const connection = 'mongodb://localhost:27017/EZRecipes'
 
 mongoose.connect(connection, {})
   .then((result) => console.log('Connected to MongoDB'))
   .catch((err) => console.error(err));
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 });
 
 // registration endpoint/function
