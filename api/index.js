@@ -3,30 +3,24 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const path = require('path');
 
 // import User model
 const User = require('./models/userModel');
 
 // configurations
 const app = express();
-const port = process.env.PORT || 5000;
+const port = 5000;
 const saltRounds = 10;
 const jwtSecret = 'secret';
 
 app.use(express.json());
 app.use(cors());
 
-const connection = 'mongodb://localhost:27017/EZRecipes'
+const connection = 'mongodb://localhost:27017/EZRecipes';
 
 mongoose.connect(connection, {})
   .then((result) => console.log('Connected to MongoDB'))
   .catch((err) => console.error(err));
-
-app.use(express.static(path.join(__dirname, '../client/build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-});
 
 // registration endpoint/function
 app.post('/register', async (req, res) => {
@@ -287,4 +281,3 @@ app.delete('/savedRecipes/:username/:recipeID', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running`);
 });
-
