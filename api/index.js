@@ -278,16 +278,6 @@ app.delete('/savedRecipes/:username/:recipeID', async (req, res) => {
   }
 });
 
-// Content Security Policy
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://ezrecipes.vercel.app/; img-src 'self' data: https://ezrecipes.vercel.app/;"
-  );
-  next();
-});
-
-
 app.listen(port, () => {
     console.log(`Server running`);
 });
