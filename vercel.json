@@ -5,8 +5,13 @@
   ],
   "headers": [
     {
-      "source": "/(.*)"
-      
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; img-src 'self' data: ${PROJECT_URL}/favicon.ico; ..."
+        }
+      ]
     }
   ]
 }
